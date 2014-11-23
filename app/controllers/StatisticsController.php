@@ -1,77 +1,88 @@
 <?php
 
+/**
+ * Class StatisticsController
+ */
 class StatisticsController extends BaseController {
 
-    protected $statistics;
+	/**
+	 * @var \GoalWall\Statistics\StatisticService
+	 */
+	protected $statisticService;
 
-    public function __construct(GoalWall\Statistics\StatisticRepository $statistics)
+	/**
+	 * @param \GoalWall\Statistics\StatisticService $statisticService
+	 */
+	public function __construct(GoalWall\Statistics\StatisticService $statisticService)
     {
-        $this->statistics = $statistics;
+	    $this->statisticService = $statisticService;
     }
 
-    public function postStore()
+	/**
+	 * @return json
+	 */
+	public function postStore()
     {
-        //return "hello world";
-
-        $statistic = new \GoalWall\Statistics\Statistic();
-
-        $statistic->mode_id = Input::get('mode_id');
-        $statistic->shots = Input::get('shots');
-        $statistic->misses = Input::get('misses');
-        $statistic->score = Input::get('score');
-        $statistic->event_id = Input::get('event_id');
-        $statistic->player_name = 'Spieler 1';
-        $statistic->player_image_path = 'uploads/players/player1_201406052250.jpg';
-        $statistic->time = \Carbon\Carbon::now()->toDateTimeString();
-
-        $statistic->save();
-
-        return var_dump($statistic);
-    }
-
-
-    public function getEdit($id)
-    {
-        $statistic = $this->statistics->getModel()->where('id', '=', $id)->first();
-
-        return View::make('statistics.edit', compact('statistic'));
-    }
-
-    public function getLatest()
-    {
-        $statistic = $this->statistics->getModel()->orderBy('id', 'desc')->limit(1)->first();
-
-        return View::make('statistics.edit', compact('statistic'));
-    }
-
-    public function postUpdate()
-    {
-        $statistic = $this->statistics->getModel()->where('id', '=', Input::get('id'))->first();
-        /*
-        $statistic->mode_id = Input::get('mode_id');
-        $statistic->shots = Input::get('shots');
-        $statistic->misses = Input::get('misses');
-        $statistic->score = Input::get('score');
-        $statistic->event_id = Input::get('event_id');
-        */
-        $statistic->player_name = Input::get('player_name');
-        $statistic->player_image_path = 'uploads/players/player1_201406052250.jpg';
-
-        if (Input::hasFile('image'))
+        try
         {
-            $file = Input::file('image');
-            $name = time() . '-' . $file->getClientOriginalName();
-            $extension = $file->getClientOriginalExtension();
-
-            $path =  '/uploads/players/';
-            $rel_path = public_path() . $path;
-
-            $file->move($rel_path, $name);
-
-            $statistic->player_image_path = $path . $name;
+	        $statistic = $this->statisticService->add(Input::all());
+        }
+        catch (Exception $e)
+        {
+	        return json_encode(array('status' => 'error', 'message' => 'Statistic could not be saved!'));
         }
 
-        $statistic->save();
+        return json_encode($statistic->toArray());
+    }
+
+
+	/**
+	 * @param $id
+	 * @return \Illuminate\View\View
+	 */
+	public function getEdit($id)
+    {
+	    try
+	    {
+		    $statistic = $this->statisticService->getById($id);
+	    }
+		catch(Exception $e)
+		{
+			App::abort(404);
+		}
+
+        return View::make('statistics.edit', compact('statistic'));
+    }
+
+	/**
+	 * @return \Illuminate\View\View
+	 */
+	public function getLatest($event_id)
+    {
+        $statistic = $this->statisticService->getLatestWithoutPlayer($event_id);
+
+        return View::make('statistics.edit', compact('statistic'));
+    }
+
+	/**
+	 *
+	 */
+	public function updatePlayer()
+	{
+		$input = Input::all();
+		$statistic = $this->statisticService->updatePlayerInfo($input);
+
+		return Redirect::route('statistics.latest', array($statistic->event_id));
+	}
+
+	/**
+	 *
+	 */
+	public function postUpdate()
+    {
+		$statistic = $this->statisticService->update(Input::all());
+
+	    return json_encode($statistic);
     }
 
 }

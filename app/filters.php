@@ -78,3 +78,26 @@ Route::filter('csrf', function()
 		throw new Illuminate\Session\TokenMismatchException;
 	}
 });
+
+/*
+|--------------------------------------------------------------------------
+| Login Filter
+|--------------------------------------------------------------------------
+|
+*/
+
+Route::filter('with_login', function()
+{
+	if ( Auth::guest() && !(Input::has('user') && Input::has('password')) )
+	{
+		return Redirect::to('/');
+	}
+	else
+	{
+		$user = Auth::attempt(array('email' => Input::get('user'), 'password' => Input::get('password')));
+		if (!Auth::check())
+		{
+			return Redirect::to('/');
+		}
+	}
+});

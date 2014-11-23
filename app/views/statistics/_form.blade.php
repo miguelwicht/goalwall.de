@@ -1,5 +1,5 @@
 
-{{ Form::open(array('route' => 'statistics.update', 'files' => true)) }}
+{{ Form::open(array('route' => 'statistics.update.player', 'files' => true)) }}
 
     <div class="form-group">
         {{ Form::label('Name', 'Name:') }}

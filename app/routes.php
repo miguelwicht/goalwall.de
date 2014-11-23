@@ -11,7 +11,7 @@
 |
 */
 
-Route::get('/', function()
+Route::get('/', function ()
 {
 	return View::make('home');
 });
@@ -22,10 +22,30 @@ Route::get('events/{id}', array('as' => 'events.show', 'uses' => 'EventsControll
 
 
 // routes that need a authenticated user
-//Route::group(array('before' => 'auth'), function()
-//{
-    Route::post('statistics/store', array('as' => 'statistics.store', 'uses' => 'StatisticsController@postStore'));
-//}
-    Route::post('statistics/update', array('as' => 'statistics.update', 'uses' => 'StatisticsController@postUpdate'));
-    Route::get('statistics/latest', array('as' => 'statistics.latest', 'uses' => 'StatisticsController@getLatest'));
-    Route::get('statistics/{id}/edit', array('as' => 'statistics.edit', 'uses' => 'StatisticsController@getEdit'));
+Route::group(array('before' => 'with_login'), function ()
+{
+	Route::post('statistics/store', array(
+		'as'   => 'statistics.store',
+		'uses' => 'StatisticsController@postStore'
+	));
+
+	Route::post('statistics/update', array(
+		'as'   => 'statistics.update',
+		'uses' => 'StatisticsController@postUpdate'
+	));
+
+	Route::post('statistics/update/player', array(
+		'as'   => 'statistics.update.player',
+		'uses' => 'StatisticsController@updatePlayer'
+	));
+
+	Route::get('statistics/latest/{event_id}', array(
+		'as'   => 'statistics.latest',
+		'uses' => 'StatisticsController@getLatest'
+	));
+
+	Route::get('statistics/{id}/edit', array(
+		'as'   => 'statistics.edit',
+		'uses' => 'StatisticsController@getEdit'
+	));
+});
