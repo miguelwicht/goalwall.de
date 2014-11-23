@@ -60,7 +60,12 @@ class StatisticService {
 	 */
 	public function getLatestWithoutPlayer($event_id)
 	{
-		return $this->statisticRepository->getModel()->where('event_id', '=', $event_id)->where('updated_player', '=', false)->orderBy('created_at', 'desc')->firstOrFail();
+		return $this->statisticRepository->getModel()
+			->with('event', 'mode')
+			->where('event_id', '=', $event_id)
+			->where('updated_player', '=', false)
+			->orderBy('created_at', 'desc')
+			->firstOrFail();
 	}
 
 	/**
@@ -73,7 +78,7 @@ class StatisticService {
 		$statistic->player_name = isset($input['player_name']) ? $input['player_name'] : Lang::get('shared.unknown_player');
 		$statistic->updated_player = true;
 
-		$pathToImage = $this->saveImage($input['image']);
+		$pathToImage = isset($input['image']) ? $this->saveImage($input['image']) : false;
 		$statistic->player_image_path = $pathToImage ? $pathToImage : $statistic->player_image_path;
 
 		$statistic->save();

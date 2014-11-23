@@ -39,7 +39,7 @@ Route::group(array('before' => 'with_login'), function ()
 		'uses' => 'StatisticsController@updatePlayer'
 	));
 
-	Route::get('statistics/latest/{event_id}', array(
+	Route::any('statistics/latest/{event_id}', array(
 		'as'   => 'statistics.latest',
 		'uses' => 'StatisticsController@getLatest'
 	));
