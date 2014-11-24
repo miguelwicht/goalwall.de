@@ -39,7 +39,7 @@ return array(
 	|
 	*/
 
-	'timezone' => getenv('TIMEZONE'),
+	'timezone' => 'Europe/Berlin',
 
 	/*
 	|--------------------------------------------------------------------------
