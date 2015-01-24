@@ -60,14 +60,28 @@ class StatisticsController extends BaseController {
 	public function getLatest($event_id)
     {
         $statistic = $this->statisticService->getLatestWithoutPlayer($event_id);
-	    
+
 	    if (Request::wantsJson())
 	    {
 		    return json_encode($statistic->toArray());
 	    }
-
+	//die(json_encode($statistic->toArray()));
         return View::make('statistics.edit', compact('statistic'));
     }
+
+	/**
+	 * @return \Illuminate\View\View
+	 */
+	public function getRankings($event_id, $mode_id)
+	{
+		$statistics = $this->statisticService->getRankingsForEventAndMode($event_id, $mode_id);
+
+		if (Request::wantsJson())
+		{
+			return json_encode($statistics->toArray());
+		}
+		return json_encode($statistics->toArray());
+	}
 
 	/**
 	 *

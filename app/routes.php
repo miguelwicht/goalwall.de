@@ -48,4 +48,9 @@ Route::group(array('before' => 'with_login'), function ()
 		'as'   => 'statistics.edit',
 		'uses' => 'StatisticsController@getEdit'
 	));
+
+	Route::get('statistics/rankings/{event_id}/{mode_id}', array(
+		'as'    => 'statistics.rankings',
+		'uses'  => 'StatisticsController@getRankings'
+	));
 });

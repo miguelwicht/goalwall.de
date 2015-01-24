@@ -69,6 +69,21 @@ class StatisticService {
 	}
 
 	/**
+	 * @param $event_id
+	 * @return mixed
+	 */
+	public function getRankingsForEventAndMode($event_id, $mode_id)
+	{
+		return $this->statisticRepository->getModel()
+			->with('event', 'mode')
+			->where('event_id', '=', $event_id)
+			->where('mode_id', '=', $mode_id)
+			->orderBy('score', 'desc')
+			->limit(10)
+			->get();
+	}
+
+	/**
 	 * @param $input
 	 * @return mixed
 	 */
