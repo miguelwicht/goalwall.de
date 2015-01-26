@@ -16,14 +16,16 @@ Route::get('/', function ()
 	return View::make('home');
 });
 
-// Events
-Route::get('events', array('as' => 'events.index', 'uses' => 'EventsController@getIndex'));
-Route::get('events/{id}', array('as' => 'events.show', 'uses' => 'EventsController@getEvent'));
+
 
 
 // routes that need a authenticated user
 Route::group(array('before' => 'with_login'), function ()
 {
+	// Events
+	Route::get('events', array('as' => 'events.index', 'uses' => 'EventsController@getIndex'));
+	Route::get('events/{id}', array('as' => 'events.show', 'uses' => 'EventsController@getEvent'));
+
 	Route::post('statistics/store', array(
 		'as'   => 'statistics.store',
 		'uses' => 'StatisticsController@postStore'
